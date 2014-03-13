@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.liferay.portal.kernel.util.Validator;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.text.Text;
@@ -67,7 +68,7 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 
 		addHighlights(searchRequestBuilder, queryConfig);
 		addQueryWithCompanyId(searchRequestBuilder, searchContext.getCompanyId(), query);
-		searchRequestBuilder.addFields("*");
+		//searchRequestBuilder.addFields("*");
 		addPagination(searchRequestBuilder, searchContext.getStart(), searchContext.getEnd());
 		addSort(searchRequestBuilder, searchContext.getSorts());
 		addFacets(searchRequestBuilder, searchContext);
@@ -121,7 +122,7 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 
 		addHighlights(searchRequestBuilder, queryConfig);
 		addQueryWithCompanyId(searchRequestBuilder, companyId, query);
-		searchRequestBuilder.addFields("*");
+		//searchRequestBuilder.addFields("*");
 		addPagination(searchRequestBuilder, start, end);
 		addSort(searchRequestBuilder, sort);
 
@@ -273,21 +274,45 @@ public class ElasticsearchIndexSearcher extends BaseIndexSearcher {
 	}
 
 	private Document extractDocument(SearchHit hit) {
-
-		Document document = new DocumentImpl();
-
-		// process documents
-		Map<String, SearchHitField> hitFields = hit.getFields();
-		for (Entry<String, SearchHitField> entry : hitFields.entrySet()) {
-			Collection<Object> fieldValues = entry.getValue().getValues();
-
-			Field field =
-				new Field(entry.getKey(), ArrayUtil.toStringArray(fieldValues.toArray(new Object[fieldValues.size()])));
-
-			document.add(field);
-		}
-		return document;
+        if (!hit.getFields().isEmpty()) return extractDocumentFromFields(hit);
+        else return extractDocumentFromSource(hit);
 	}
+
+    private Document extractDocumentFromFields(SearchHit hit) {
+        Document document = new DocumentImpl();
+
+        // process documents
+        Map<String, SearchHitField> hitFields = hit.getFields();
+
+        for (Entry<String, SearchHitField> entry : hitFields.entrySet()) {
+            Collection<Object> fieldValues = entry.getValue().getValues();
+
+            Field field =
+                    new Field(entry.getKey(), ArrayUtil.toStringArray(fieldValues.toArray(new Object[fieldValues.size()])));
+
+            document.add(field);
+        }
+
+        return document;
+    }
+
+    private Document extractDocumentFromSource(SearchHit hit) {
+        Document document = new DocumentImpl();
+
+        // process documents
+        Map<String, Object> hitFields = hit.getSource();
+
+        for (Entry<String, Object> entry : hitFields.entrySet()) {
+            String fieldValue = entry.getValue().toString();
+
+            Field field =
+                    new Field (entry.getKey(), fieldValue);
+
+            document.add(field);
+        }
+
+        return document;
+    }
 
 	private String extractHighlightedSnippet(SearchHit hit, QueryConfig queryConfig) {
 
