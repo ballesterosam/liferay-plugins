@@ -13,7 +13,7 @@
 			"folderId" : { "type" : "string", "store" : "yes", "index" : "not_analyzed" },
 			"groupId" : { "type" : "string", "store" : "yes", "index" : "not_analyzed" },
 			"id" : { "type" : "string", "store" : "yes", "index" : "not_analyzed" },
-			"keywordSearch" : { "type" : "string", "store" : "yes", "index" : "not_analyzed", "omit_norms" : "yes", "omit_term_freq_and_positions" : "yes" },
+			"keywordSearch" : { "type" : "string", "store" : "yes", "index" : "not_analyzed", "omit_norms" : "yes", "index_options" : "DOCS_ONLY" },
 			"languageId" : { "type" : "string", "store" : "yes", "index" : "not_analyzed" },
 			"lastName" : { "type" : "string", "store" : "yes", "index" : "analyzed" },
 			"leftOrganizationId" : { "type" : "string", "store" : "yes", "index" : "not_analyzed" },
