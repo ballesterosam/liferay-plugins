@@ -86,7 +86,7 @@ public class ElasticsearchSpellCheckIndexWriter extends BaseGenericSpellCheckInd
 		boolQueryBuilder.must(QueryBuilders.termQuery(Field.TYPE, type));
 
 		DeleteByQueryRequest deleteByQueryRequest = new DeleteByQueryRequest();
-		deleteByQueryRequest.query(boolQueryBuilder);
+		deleteByQueryRequest.source(boolQueryBuilder.toString());
 
 		return deleteByQueryRequest;
 	}

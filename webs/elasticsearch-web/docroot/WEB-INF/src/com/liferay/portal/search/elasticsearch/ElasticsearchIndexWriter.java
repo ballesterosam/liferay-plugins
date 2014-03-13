@@ -104,7 +104,7 @@ public class ElasticsearchIndexWriter extends BaseIndexWriter {
 		boolQueryBuilder.must(QueryBuilders.termQuery(Field.PORTLET_ID, portletId));
 
 		DeleteByQueryRequest deleteByQueryRequest = new DeleteByQueryRequest();
-		deleteByQueryRequest.query(boolQueryBuilder);
+		deleteByQueryRequest.source(boolQueryBuilder.toString());
 
 		try {
 			client.deleteByQuery(deleteByQueryRequest);
