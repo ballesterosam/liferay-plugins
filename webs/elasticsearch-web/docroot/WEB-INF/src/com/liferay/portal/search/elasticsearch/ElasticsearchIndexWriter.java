@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.elasticsearch.action.deletebyquery.DeleteByQueryRequest;
+import org.elasticsearch.action.support.QuerySourceBuilder;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -28,7 +29,7 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 /**
- * 
+ *
  * @author Milen Dyankov
  *
  */
@@ -103,8 +104,11 @@ public class ElasticsearchIndexWriter extends BaseIndexWriter {
 		}
 		boolQueryBuilder.must(QueryBuilders.termQuery(Field.PORTLET_ID, portletId));
 
+        QuerySourceBuilder querySourceBuilder = new QuerySourceBuilder();
+        querySourceBuilder.setQuery(boolQueryBuilder);
+
 		DeleteByQueryRequest deleteByQueryRequest = new DeleteByQueryRequest();
-		deleteByQueryRequest.source(boolQueryBuilder.toString());
+		deleteByQueryRequest.source(querySourceBuilder);
 
 		try {
 			client.deleteByQuery(deleteByQueryRequest);

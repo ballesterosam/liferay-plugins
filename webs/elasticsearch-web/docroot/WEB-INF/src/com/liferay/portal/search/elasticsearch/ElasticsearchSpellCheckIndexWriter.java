@@ -15,6 +15,7 @@
 package com.liferay.portal.search.elasticsearch;
 
 import org.elasticsearch.action.deletebyquery.DeleteByQueryRequest;
+import org.elasticsearch.action.support.QuerySourceBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 
@@ -85,8 +86,11 @@ public class ElasticsearchSpellCheckIndexWriter extends BaseGenericSpellCheckInd
 		boolQueryBuilder.must(QueryBuilders.termQuery(Field.PORTLET_ID, PortletKeys.SEARCH));
 		boolQueryBuilder.must(QueryBuilders.termQuery(Field.TYPE, type));
 
+        QuerySourceBuilder querySourceBuilder = new QuerySourceBuilder();
+        querySourceBuilder.setQuery(boolQueryBuilder);
+
 		DeleteByQueryRequest deleteByQueryRequest = new DeleteByQueryRequest();
-		deleteByQueryRequest.source(boolQueryBuilder.toString());
+		deleteByQueryRequest.source(querySourceBuilder);
 
 		return deleteByQueryRequest;
 	}
